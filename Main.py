@@ -9,15 +9,21 @@ import plotly.graph_objs as go
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 from plotly import __version__
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-import datetime as dt
-import time
+import datetime 
 from datetime import datetime
+import time
+
+cf.go_offline()
+
+fig=go.Figure()
+
 f = open('C:\\Users\\Shane\\proj\\Google Maps\\Takeout\All\\2019_NOVEMBER.json')
 data = json.load(f)
 p=open('C:\\Users\\Shane\\proj\\Google Maps\\CSV_1.csv','w')
 
 Counties = ['Carlow', 'Cavan', 'Clare', 'Cork', 'Donegal', 'Dublin', 'Galway', 'Kerry', 'Kildare', 'Kilkenny', 'Laois', 'Leitrim', 'Limerick', 'Longford', 'Louth', 'Mayo', 'Meath', 'Monaghan', 'Offaly', 'Roscommon', 'Sligo', 'Tipperary', 'Waterford', 'Westmeath', 'Wexford', 'Wicklow']
-
+today = datetime.today()
+d1 = today.strftime("%d_%m_%Y")
 
 rows=[]
 d={}
@@ -43,19 +49,17 @@ for i in data['timelineObjects']:
     else : 
         adr = str(data['timelineObjects'][count]['placeVisit']['location']['address'])
         name = str(data['timelineObjects'][count]['placeVisit']['location']['name'])
-        end = data['timelineObjects'][count]['placeVisit']['duration']['endTimestampMs']
+        end = str(data['timelineObjects'][count]['placeVisit']['duration']['endTimestampMs'])
 
         con = str(data['timelineObjects'][count]['placeVisit']['placeConfidence'])
-        start = data['timelineObjects'][count]['placeVisit']['duration']['startTimestampMs']
+        start = str(data['timelineObjects'][count]['placeVisit']['duration']['startTimestampMs'])
         for i in Counties:
             if (i in adr):
                 adr = adr.replace("\n", "\t")
-                adr = adr.strip()
-                print(str(count)+ ' '+adr)
-                endi=int(end)
-                rend = datetime.fromtimestamp(endi).strftime('%Y-%m-%d %H:%M:%S')
-                rstart = datetime.datetime.fromtimestamp(float(start)/1000.)
-                date = date.datetime.fromtimestamp(float(start)/1000.).strftime('%Y-%m-%d')
+                print(str(count)+ ' '+adr) 
+                rend = datetime.fromtimestamp(int(end)/1000).strftime('%Y-%m-%d %H:%M:%S')
+                rstart = datetime.fromtimestamp(int(start)/1000).strftime('%Y-%m-%d %H:%M:%S')
+                date = datetime.fromtimestamp(float(start)/1000).strftime('%Y-%m-%d')
                 d['Address']=adr
                 d['County']=i
                 d['Name']=name
@@ -65,22 +69,19 @@ for i in data['timelineObjects']:
                 d['Location confidence']=con
                 rows.append(d)
                 dfGoogleStats = pd.DataFrame(rows)
-                today = date.today()
-                d1 = today.strftime("%d_%m_%Y")
+                
                 dfGoogleStats.to_csv(f'C:\\Users\\Shane\\proj\\Google Maps\\GoogleMaps_{d1}.csv', index=False)
     count=count+1
 
-#data = dict(type = 'choropleth',
-            #locations = ['Ireland'],
-            #locationmode = 'country names',
-            #colorscale= 'Portland',
-            #text= ['text1'],
-            #z=[1.0],
-            #colorbar = {'title':'Colorbar Title'})
 
-#layout = dict(geo = {'scope':'Ireland'})
-#choromap = go.Figure(data = [data],layout = layout)
-#iplot(choromap)
+#CREATE CHARTS BASED OFF OF DATA
+#DISTPLOT
+df=pd.read_csv(f'C:\\Users\\Shane\\proj\\Google Maps\\GoogleMaps_{d1}.csv')
+data = df['County'].iplot(kind='hist')
+
+
+choromap = go.Figure(data = [data])
+iplot(choromap)
 
 #count2 = 1
 #for i in data['timelineObjects'][count]:
