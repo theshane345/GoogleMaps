@@ -28,9 +28,10 @@ d1 = today.strftime("%d_%m_%Y")
 rows=[]
 d={}
 # CREATE THE CSV FILE from json file
+#TO:DO ITERATE THROUGH EVERY JSON FILE CREATE FULL FILE
+
 count=0
 for i in data['timelineObjects']:
-    #lat = data['timelineObjects'][count].keys()
     key1='activitySegment'
     if(key1 in data['timelineObjects'][count]):
         atype = str(data['timelineObjects'][count]['activitySegment']['activityType'])
@@ -38,7 +39,6 @@ for i in data['timelineObjects']:
         accon= str(data['timelineObjects'][count]['activitySegment']['confidence'])
         longi = str(data['timelineObjects'][count]['activitySegment']['endLocation']['longitudeE7'])
         print(str(count)+ ' '+'Latitude = '+lat+' ' + 'Longitude = '+longi)
-        #row = [str(count),str(lat),str(longi)]
         d={}
         d['Activity Type']=atype
         d['Activity Confidence']=accon
@@ -76,19 +76,13 @@ for i in data['timelineObjects']:
 
 #CREATE CHARTS BASED OFF OF DATA
 #DISTPLOT
+##TO:DO DO I NEED TO CREATE THIS IN JUPITYR?
+#CREATE A BLOG ABOUT?
 df=pd.read_csv(f'C:\\Users\\Shane\\proj\\Google Maps\\GoogleMaps_{d1}.csv')
 data = df['County'].iplot(kind='hist')
-
-
 choromap = go.Figure(data = [data])
 iplot(choromap)
 
-#count2 = 1
-#for i in data['timelineObjects'][count]:
-   # count2= +2AAA
-    #adr = str(data['timelineObjects'][count]['placeVisit']['location']['address'])
-    
 
-   # print('location = '+adr)
 p.close()
 f.close()
