@@ -10,7 +10,8 @@ from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 from plotly import __version__
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 import datetime as dt
-from datetime import date
+import time
+from datetime import datetime
 f = open('C:\\Users\\Shane\\proj\\Google Maps\\Takeout\All\\2019_NOVEMBER.json')
 data = json.load(f)
 p=open('C:\\Users\\Shane\\proj\\Google Maps\\CSV_1.csv','w')
@@ -26,34 +27,42 @@ for i in data['timelineObjects']:
     #lat = data['timelineObjects'][count].keys()
     key1='activitySegment'
     if(key1 in data['timelineObjects'][count]):
+        atype = str(data['timelineObjects'][count]['activitySegment']['activityType'])
         lat = str(data['timelineObjects'][count]['activitySegment']['endLocation']['latitudeE7'])
+        accon= str(data['timelineObjects'][count]['activitySegment']['confidence'])
         longi = str(data['timelineObjects'][count]['activitySegment']['endLocation']['longitudeE7'])
         print(str(count)+ ' '+'Latitude = '+lat+' ' + 'Longitude = '+longi)
         #row = [str(count),str(lat),str(longi)]
         d={}
-        d['Num']= str(count)
-        d['latitude']=lat
+        d['Activity Type']=atype
+        d['Activity Confidence']=accon
+        d['Latitude']=lat
         d['Longitude']=longi
-        
-        
-        
-
         
        
     else : 
         adr = str(data['timelineObjects'][count]['placeVisit']['location']['address'])
+        name = str(data['timelineObjects'][count]['placeVisit']['location']['name'])
+        end = data['timelineObjects'][count]['placeVisit']['duration']['endTimestampMs']
+
+        con = str(data['timelineObjects'][count]['placeVisit']['placeConfidence'])
+        start = data['timelineObjects'][count]['placeVisit']['duration']['startTimestampMs']
         for i in Counties:
             if (i in adr):
                 adr = adr.replace("\n", "\t")
                 adr = adr.strip()
                 print(str(count)+ ' '+adr)
-                row2=[str(count),adr]
-                p.write(str(count))
-                p.write(adr)
-                #p.writelines(row2)
-                d['Num2']= str(count)
+                endi=int(end)
+                rend = datetime.fromtimestamp(endi).strftime('%Y-%m-%d %H:%M:%S')
+                rstart = datetime.datetime.fromtimestamp(float(start)/1000.)
+                date = date.datetime.fromtimestamp(float(start)/1000.).strftime('%Y-%m-%d')
                 d['Address']=adr
                 d['County']=i
+                d['Name']=name
+                d['Start time']=rstart
+                d['End time']=rend
+                d['Date'] = date
+                d['Location confidence']=con
                 rows.append(d)
                 dfGoogleStats = pd.DataFrame(rows)
                 today = date.today()
